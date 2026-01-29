@@ -9,6 +9,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  define: {
+    "process.env.NODE_ENV": JSON.stringify("production"),
+  },
   build: {
     outDir: "dist",
     emptyOutDir: false,

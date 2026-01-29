@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { DynamicIcon, IconName, iconNames } from "lucide-react/dynamic";
+import { useCallback, useEffect, useState } from "react";
+import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { useCustomField } from "../../common/hooks/useCustomField";
 import { useAppLocation } from "../../common/hooks/useAppLocation";
+import { IconPickerGrid } from "../../rte-icon-picker";
 import "./CustomField.css";
-
-const ICONS_PER_PAGE = 100;
-const allIconNames = Array.from(iconNames) as IconName[];
 
 interface FieldData {
   name: string;
@@ -14,8 +12,6 @@ interface FieldData {
 const CustomFieldExtension = () => {
   const { customField, setFieldData, loading } = useCustomField();
   const { location } = useAppLocation();
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
   const [localData, setLocalData] = useState<FieldData | null>(null);
 
   // Use SDK data when available, fall back to local state for dev mode
@@ -39,22 +35,6 @@ const CustomFieldExtension = () => {
       (location as any).enableAutoResizing();
     }
   }, [location]);
-
-  const filtered = useMemo(() => {
-    if (!search.trim()) return allIconNames;
-    const q = search.toLowerCase();
-    return allIconNames.filter((name) => name.includes(q));
-  }, [search]);
-
-  const totalPages = Math.ceil(filtered.length / ICONS_PER_PAGE);
-  const pageIcons = filtered.slice(
-    page * ICONS_PER_PAGE,
-    (page + 1) * ICONS_PER_PAGE
-  );
-
-  useEffect(() => {
-    setPage(0);
-  }, [search]);
 
   const handleSelect = useCallback(
     (name: string) => {
@@ -89,50 +69,7 @@ const CustomFieldExtension = () => {
         </div>
       </div>
 
-      <input
-        className="icon-picker-search"
-        type="text"
-        placeholder="Search icons..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      <div className="icon-picker-grid">
-        {pageIcons.map((name) => (
-          <button
-            key={name}
-            className={`icon-picker-item${name === selectedIcon ? " selected" : ""}`}
-            onClick={() => handleSelect(name)}
-            type="button"
-            title={name}
-          >
-            <DynamicIcon name={name} size={20} />
-            <span className="icon-picker-item-name">{name}</span>
-          </button>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="icon-picker-pagination">
-          <button
-            disabled={page === 0}
-            onClick={() => setPage((p) => p - 1)}
-            type="button"
-          >
-            Previous
-          </button>
-          <span>
-            Page {page + 1} of {totalPages} ({filtered.length} icons)
-          </span>
-          <button
-            disabled={page >= totalPages - 1}
-            onClick={() => setPage((p) => p + 1)}
-            type="button"
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <IconPickerGrid selectedIcon={selectedIcon} onSelect={handleSelect} />
     </div>
   );
 };

@@ -1,72 +1,59 @@
-import React, { useState, useCallback } from "react";
-import ContentstackSDK from "@contentstack/app-sdk";
+import ContentstackAppSDK, { PluginBuilder } from "@contentstack/app-sdk";
+import React from "react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { IconPickerGrid } from "./rte-icon-picker";
+import { createRoot } from "react-dom/client";
 
 const ELEMENT_TYPE = "lucide-icon";
 
-const IconPickerModal = ({
-  onSelect,
-}: {
-  onSelect: (name: string) => void;
-}) => {
-  return (
-    <div style={{ padding: "1rem", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
-      <IconPickerGrid onSelect={onSelect} />
-    </div>
-  );
-};
-
-const InlineIcon = ({ attrs }: { attrs: Record<string, string> }) => {
-  const iconName = attrs?.["icon-name"];
-  if (!iconName) return null;
-  return (
-    <span
-      style={{ display: "inline-flex", alignItems: "center", verticalAlign: "middle" }}
-      contentEditable={false}
-    >
-      <DynamicIcon name={iconName as IconName} size={18} />
-    </span>
-  );
-};
-
-export default ContentstackSDK.init().then((sdk: any) => {
-  const RTE = sdk.location?.RTEPlugin;
-  if (!RTE) return;
-
-  const plugin = RTE(ELEMENT_TYPE, () => ({
-    title: "Insert Icon",
-    icon: "insert-icon",
-    display: ["toolbar"],
-    elementType: ["inline", "void"],
-    render: (props: any) => {
-      const { attrs } = props;
-      return <InlineIcon attrs={attrs} />;
-    },
-  }));
-
-  plugin.on("exec", (rte: any) => {
+const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
+  .title("Insert Icon")
+  .icon(<DynamicIcon name="smile" size={16} />)
+  .display("toolbar")
+  .elementType(["inline", "void"])
+  .render((_element: React.ReactElement, attrs: { [key: string]: any }) => {
+    const iconName = attrs?.["icon-name"];
+    if (!iconName) return <span />;
+    return (
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          verticalAlign: "middle",
+        }}
+        contentEditable={false}
+      >
+        <DynamicIcon name={iconName as IconName} size={18} />
+      </span>
+    );
+  })
+  .on("exec", (rte) => {
     let modalRoot: HTMLDivElement | null = null;
+    let root: ReturnType<typeof createRoot> | null = null;
 
     const cleanup = () => {
+      if (root) {
+        root.unmount();
+        root = null;
+      }
       if (modalRoot) {
-        const ReactDOM = require("react-dom");
-        ReactDOM.unmountComponentAtNode(modalRoot);
         modalRoot.remove();
         modalRoot = null;
       }
     };
 
     const handleSelect = (name: string) => {
-      rte.insertNode({
-        type: ELEMENT_TYPE,
-        attrs: { "icon-name": name },
-        children: [{ text: "" }],
-      });
+      rte.insertNode(
+        {
+          type: ELEMENT_TYPE,
+          attrs: { "icon-name": name },
+          children: [{ text: "" }],
+        } as any,
+        {}
+      );
       cleanup();
     };
 
-    // Create modal overlay
     modalRoot = document.createElement("div");
     Object.assign(modalRoot.style, {
       position: "fixed",
@@ -88,6 +75,7 @@ export default ContentstackSDK.init().then((sdk: any) => {
       width: "700px",
       maxHeight: "80vh",
       overflow: "auto",
+      padding: "1rem",
       boxShadow: "0 4px 24px rgba(0,0,0,0.15)",
     });
 
@@ -98,12 +86,9 @@ export default ContentstackSDK.init().then((sdk: any) => {
 
     document.body.appendChild(modalRoot);
 
-    const ReactDOM = require("react-dom");
-    ReactDOM.render(
-      <IconPickerModal onSelect={handleSelect} />,
-      modalContent
-    );
-  });
+    root = createRoot(modalContent);
+    root.render(<IconPickerGrid onSelect={handleSelect} />);
+  })
+  .build();
 
-  return plugin;
-});
+export default ContentstackAppSDK.registerRTEPlugins(LucideIconPlugin);

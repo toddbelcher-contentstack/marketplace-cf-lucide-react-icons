@@ -1,6 +1,6 @@
 {
   "name": "marketplace-app-boilerplate",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "files": [
     "dist"
@@ -26,7 +26,7 @@
     "web-vitals": "^3.5.1"
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "npm run build:rte && cp dist/json-rte.js public/json-rte.js && vite",
     "build": "vite build && vite build --config vite.config.rte.ts",
     "build:rte": "vite build --config vite.config.rte.ts",
     "lint": "eslint .",

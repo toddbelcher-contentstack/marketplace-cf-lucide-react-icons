@@ -1,8 +1,8 @@
 import ContentstackAppSDK, { PluginBuilder } from "@contentstack/app-sdk";
 import React from "react";
 import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import ReactDOM from "react-dom";
 import { IconPickerGrid } from "./rte-icon-picker";
-import { createRoot } from "react-dom/client";
 
 const ELEMENT_TYPE = "lucide-icon";
 
@@ -38,12 +38,12 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   })
   .on("exec", (rte) => {
     let modalRoot: HTMLDivElement | null = null;
-    let root: ReturnType<typeof createRoot> | null = null;
+    let modalContent: HTMLDivElement | null = null;
 
     const cleanup = () => {
-      if (root) {
-        root.unmount();
-        root = null;
+      if (modalContent) {
+        ReactDOM.unmountComponentAtNode(modalContent);
+        modalContent = null;
       }
       if (modalRoot) {
         modalRoot.remove();
@@ -77,7 +77,7 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
       background: "rgba(0,0,0,0.4)",
     });
 
-    const modalContent = document.createElement("div");
+    modalContent = document.createElement("div");
     Object.assign(modalContent.style, {
       background: "white",
       borderRadius: "8px",
@@ -95,8 +95,7 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
 
     document.body.appendChild(modalRoot);
 
-    root = createRoot(modalContent);
-    root.render(<IconPickerGrid onSelect={handleSelect} />);
+    ReactDOM.render(<IconPickerGrid onSelect={handleSelect} />, modalContent);
   })
   .build();
 

@@ -20,10 +20,23 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .icon(<ToolbarIcon />)
   .display(["toolbar"])
   .elementType(["inline", "void"])
-  .render((element: any, attrs: { [key: string]: any }, path: number[], rte: any) => {
-    console.log("[lucide-icon] render called", JSON.stringify({ element: element?.props, attrs, path }));
-    const iconName = attrs?.["icon-name"] || element?.props?.attrs?.["icon-name"] || element?.props?.element?.attrs?.["icon-name"];
-    console.log("[lucide-icon] resolved iconName", iconName);
+  .render((arg0: any, arg1: any, arg2: any, arg3: any) => {
+    // Log all args to find where attrs live
+    try {
+      console.log("[lucide-icon] arg0 type", typeof arg0, arg0?.type, arg0?.props ? Object.keys(arg0.props) : "no props");
+      if (arg0?.props?.element) {
+        console.log("[lucide-icon] arg0.props.element", JSON.stringify(arg0.props.element));
+      }
+      console.log("[lucide-icon] arg1", JSON.stringify(arg1));
+      console.log("[lucide-icon] arg2", arg2);
+      console.log("[lucide-icon] arg3", arg3 ? "exists" : "undefined");
+    } catch (e) {
+      console.log("[lucide-icon] log error", e);
+    }
+    const iconName =
+      arg1?.["icon-name"] ||
+      arg0?.props?.element?.attrs?.["icon-name"] ||
+      arg0?.props?.attrs?.["icon-name"];
     if (!iconName) return <span>[no icon]</span>;
     return (
       <span

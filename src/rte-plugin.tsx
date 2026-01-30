@@ -64,23 +64,35 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
       console.log("[lucide-icon] handleSelect called", name);
       console.log("[lucide-icon] savedSelection", savedSelection);
       cleanup();
+
       // Restore selection so the node is inserted at the cursor position
       if (savedSelection) {
         rte.selection.set(savedSelection);
       }
+
       const uid = Math.random().toString(36).slice(2, 11);
       const node = {
         uid,
         type: ELEMENT_TYPE,
-        attrs: { "icon-name": name },
+        attrs: { "icon-name": name, "class-name": "lucide-icon-inline" },
         children: [{ text: "" }],
       };
-      console.log("[lucide-icon] inserting node", node);
+      console.log("[lucide-icon] inserting node", JSON.stringify(node));
+
       try {
-        rte.insertNode(node as any, { select: true });
-        console.log("[lucide-icon] insertNode succeeded");
+        // Try using the advanced Slate Transforms API directly
+        const editor = rte._adv?.editor;
+        const Transforms = rte._adv?.Transforms;
+        if (editor && Transforms) {
+          console.log("[lucide-icon] using Transforms.insertNodes");
+          Transforms.insertNodes(editor, node, { select: true });
+        } else {
+          console.log("[lucide-icon] using rte.insertNode");
+          rte.insertNode(node as any, { select: true });
+        }
+        console.log("[lucide-icon] insert succeeded");
       } catch (err) {
-        console.error("[lucide-icon] insertNode failed", err);
+        console.error("[lucide-icon] insert failed", err);
       }
     };
 

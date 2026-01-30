@@ -30,15 +30,10 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
           display: "inline-flex",
           alignItems: "center",
           verticalAlign: "middle",
-          border: "1px solid #ccc",
-          padding: "2px 4px",
-          borderRadius: "3px",
-          background: "#f9f9f9",
         }}
         contentEditable={false}
       >
         <DynamicIcon name={iconName as IconName} size={18} />
-        <span style={{ marginLeft: "4px", fontSize: "12px" }}>{iconName}</span>
         {props.children}
       </span>
     );

@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import { CustomFieldExtensionProvider } from "../../common/providers/CustomFieldExtensionProvider";
 
 const CustomFieldExtension = React.lazy(() => import("../CustomField/CustomField"));
+const AppConfiguration = React.lazy(() => import("../AppConfiguration/AppConfiguration"));
 const PageNotFound = React.lazy(() => import("../404/404"));
 const DefaultPage = React.lazy(() => import("../index"));
 
@@ -21,6 +22,14 @@ function App() {
                 <CustomFieldExtensionProvider>
                   <CustomFieldExtension />
                 </CustomFieldExtensionProvider>
+              </Suspense>
+            }
+          />
+          <Route
+            path="/app-configuration"
+            element={
+              <Suspense>
+                <AppConfiguration />
               </Suspense>
             }
           />

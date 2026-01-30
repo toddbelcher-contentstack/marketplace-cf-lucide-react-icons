@@ -20,23 +20,12 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .icon(<ToolbarIcon />)
   .display(["toolbar"])
   .elementType(["inline", "void"])
-  .render((arg0: any, arg1: any, arg2: any, arg3: any) => {
-    // Log all args to find where attrs live
-    try {
-      console.log("[lucide-icon] arg0 keys", Object.keys(arg0 || {}));
-      console.log("[lucide-icon] arg0", JSON.stringify(arg0, null, 2));
-    } catch (e) {
-      // Might be circular, try manual
-      console.log("[lucide-icon] arg0 (manual):", arg0);
-    }
-    console.log("[lucide-icon] arg1", JSON.stringify(arg1));
-    const iconName =
-      arg1?.["icon-name"] ||
-      arg0?.props?.element?.attrs?.["icon-name"] ||
-      arg0?.props?.attrs?.["icon-name"];
-    if (!iconName) return <span>[no icon]</span>;
+  .render((props: any) => {
+    const iconName = props?.element?.attrs?.["icon-name"];
+    if (!iconName) return <span />;
     return (
       <span
+        {...props.attributes}
         style={{
           display: "inline-flex",
           alignItems: "center",
@@ -50,11 +39,11 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
       >
         <DynamicIcon name={iconName as IconName} size={18} />
         <span style={{ marginLeft: "4px", fontSize: "12px" }}>{iconName}</span>
+        {props.children}
       </span>
     );
   })
   .on("exec", (rte) => {
-    // Save the current selection before the modal steals focus
     const savedSelection = rte.selection.get();
 
     let modalRoot: HTMLDivElement | null = null;
@@ -72,11 +61,8 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
     };
 
     const handleSelect = (name: string) => {
-      console.log("[lucide-icon] handleSelect called", name);
-      console.log("[lucide-icon] savedSelection", savedSelection);
       cleanup();
 
-      // Restore selection so the node is inserted at the cursor position
       if (savedSelection) {
         rte.selection.set(savedSelection);
       }
@@ -85,25 +71,16 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
       const node = {
         uid,
         type: ELEMENT_TYPE,
-        attrs: { "icon-name": name, "class-name": "lucide-icon-inline" },
+        attrs: { "icon-name": name },
         children: [{ text: "" }],
       };
-      console.log("[lucide-icon] inserting node", JSON.stringify(node));
 
-      try {
-        // Try using the advanced Slate Transforms API directly
-        const editor = rte._adv?.editor;
-        const Transforms = rte._adv?.Transforms;
-        if (editor && Transforms) {
-          console.log("[lucide-icon] using Transforms.insertNodes");
-          Transforms.insertNodes(editor, node, { select: true });
-        } else {
-          console.log("[lucide-icon] using rte.insertNode");
-          rte.insertNode(node as any, { select: true });
-        }
-        console.log("[lucide-icon] insert succeeded");
-      } catch (err) {
-        console.error("[lucide-icon] insert failed", err);
+      const editor = rte._adv?.editor;
+      const Transforms = rte._adv?.Transforms;
+      if (editor && Transforms) {
+        Transforms.insertNodes(editor, node, { select: true });
+      } else {
+        rte.insertNode(node as any, { select: true });
       }
     };
 

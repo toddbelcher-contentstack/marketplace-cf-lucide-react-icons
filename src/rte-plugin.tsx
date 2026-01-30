@@ -20,19 +20,25 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .icon(<ToolbarIcon />)
   .display(["toolbar"])
   .elementType(["inline", "void"])
-  .render((_element: React.ReactElement, attrs: { [key: string]: any }) => {
+  .render((element: React.ReactElement, attrs: { [key: string]: any }, path: number[], rte: any) => {
+    console.log("[lucide-icon] render called", { element, attrs, path });
     const iconName = attrs?.["icon-name"];
-    if (!iconName) return <span />;
+    if (!iconName) return <span>[no icon]</span>;
     return (
       <span
         style={{
           display: "inline-flex",
           alignItems: "center",
           verticalAlign: "middle",
+          border: "1px solid #ccc",
+          padding: "2px 4px",
+          borderRadius: "3px",
+          background: "#f9f9f9",
         }}
         contentEditable={false}
       >
         <DynamicIcon name={iconName as IconName} size={18} />
+        <span style={{ marginLeft: "4px", fontSize: "12px" }}>{iconName}</span>
       </span>
     );
   })
@@ -55,21 +61,27 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
     };
 
     const handleSelect = (name: string) => {
+      console.log("[lucide-icon] handleSelect called", name);
+      console.log("[lucide-icon] savedSelection", savedSelection);
       cleanup();
       // Restore selection so the node is inserted at the cursor position
       if (savedSelection) {
         rte.selection.set(savedSelection);
       }
       const uid = Math.random().toString(36).slice(2, 11);
-      rte.insertNode(
-        {
-          uid,
-          type: ELEMENT_TYPE,
-          attrs: { "icon-name": name },
-          children: [{ text: "" }],
-        } as any,
-        { select: true }
-      );
+      const node = {
+        uid,
+        type: ELEMENT_TYPE,
+        attrs: { "icon-name": name },
+        children: [{ text: "" }],
+      };
+      console.log("[lucide-icon] inserting node", node);
+      try {
+        rte.insertNode(node as any, { select: true });
+        console.log("[lucide-icon] insertNode succeeded");
+      } catch (err) {
+        console.error("[lucide-icon] insertNode failed", err);
+      }
     };
 
     modalRoot = document.createElement("div");

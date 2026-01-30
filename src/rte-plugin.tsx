@@ -55,19 +55,21 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
     };
 
     const handleSelect = (name: string) => {
-      // Restore selection so the node is inserted at the right place
+      cleanup();
+      // Restore selection so the node is inserted at the cursor position
       if (savedSelection) {
         rte.selection.set(savedSelection);
       }
+      const uid = Math.random().toString(36).slice(2, 11);
       rte.insertNode(
         {
+          uid,
           type: ELEMENT_TYPE,
           attrs: { "icon-name": name },
           children: [{ text: "" }],
         } as any,
         { select: true }
       );
-      cleanup();
     };
 
     modalRoot = document.createElement("div");

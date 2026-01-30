@@ -20,9 +20,10 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .icon(<ToolbarIcon />)
   .display(["toolbar"])
   .elementType(["inline", "void"])
-  .render((element: React.ReactElement, attrs: { [key: string]: any }, path: number[], rte: any) => {
-    console.log("[lucide-icon] render called", { element, attrs, path });
-    const iconName = attrs?.["icon-name"];
+  .render((element: any, attrs: { [key: string]: any }, path: number[], rte: any) => {
+    console.log("[lucide-icon] render called", JSON.stringify({ element: element?.props, attrs, path }));
+    const iconName = attrs?.["icon-name"] || element?.props?.attrs?.["icon-name"] || element?.props?.element?.attrs?.["icon-name"];
+    console.log("[lucide-icon] resolved iconName", iconName);
     if (!iconName) return <span>[no icon]</span>;
     return (
       <span

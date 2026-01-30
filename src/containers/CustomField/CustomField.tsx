@@ -3,6 +3,7 @@ import { DynamicIcon, IconName } from "lucide-react/dynamic";
 import { useCustomField } from "../../common/hooks/useCustomField";
 import { useAppLocation } from "../../common/hooks/useAppLocation";
 import { IconPickerGrid } from "../../rte-icon-picker";
+import "../../rte-icon-picker.css";
 import "./CustomField.css";
 
 interface FieldData {

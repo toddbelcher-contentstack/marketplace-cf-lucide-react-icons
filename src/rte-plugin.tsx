@@ -95,7 +95,7 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
 
     document.body.appendChild(modalRoot);
 
-    ReactDOM.render(<IconPickerGrid onSelect={handleSelect} />, modalContent);
+    ReactDOM.render(<IconPickerGrid onSelect={handleSelect} inline />, modalContent);
   })
   .build();
 

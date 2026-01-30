@@ -23,16 +23,13 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .render((arg0: any, arg1: any, arg2: any, arg3: any) => {
     // Log all args to find where attrs live
     try {
-      console.log("[lucide-icon] arg0 type", typeof arg0, arg0?.type, arg0?.props ? Object.keys(arg0.props) : "no props");
-      if (arg0?.props?.element) {
-        console.log("[lucide-icon] arg0.props.element", JSON.stringify(arg0.props.element));
-      }
-      console.log("[lucide-icon] arg1", JSON.stringify(arg1));
-      console.log("[lucide-icon] arg2", arg2);
-      console.log("[lucide-icon] arg3", arg3 ? "exists" : "undefined");
+      console.log("[lucide-icon] arg0 keys", Object.keys(arg0 || {}));
+      console.log("[lucide-icon] arg0", JSON.stringify(arg0, null, 2));
     } catch (e) {
-      console.log("[lucide-icon] log error", e);
+      // Might be circular, try manual
+      console.log("[lucide-icon] arg0 (manual):", arg0);
     }
+    console.log("[lucide-icon] arg1", JSON.stringify(arg1));
     const iconName =
       arg1?.["icon-name"] ||
       arg0?.props?.element?.attrs?.["icon-name"] ||

@@ -37,6 +37,9 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
     );
   })
   .on("exec", (rte) => {
+    // Save the current selection before the modal steals focus
+    const savedSelection = rte.selection.get();
+
     let modalRoot: HTMLDivElement | null = null;
     let modalContent: HTMLDivElement | null = null;
 
@@ -52,13 +55,17 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
     };
 
     const handleSelect = (name: string) => {
+      // Restore selection so the node is inserted at the right place
+      if (savedSelection) {
+        rte.selection.set(savedSelection);
+      }
       rte.insertNode(
         {
           type: ELEMENT_TYPE,
           attrs: { "icon-name": name },
           children: [{ text: "" }],
         } as any,
-        {}
+        { select: true }
       );
       cleanup();
     };

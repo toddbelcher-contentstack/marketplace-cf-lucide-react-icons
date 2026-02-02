@@ -58,12 +58,12 @@ const CustomFieldExtension = () => {
   const fieldData = isDevMode ? localData : customField;
   const selectedIcon = useMemo(() => parseIconName(fieldData), [fieldData]);
 
-  // Collapse picker when an icon is already selected on load
+  // Collapse picker when an icon is already selected (including async load)
   useEffect(() => {
     if (selectedIcon) {
       setExpanded(false);
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedIcon]);
 
   const handleSetFieldData = useCallback(
     (data: unknown) => {

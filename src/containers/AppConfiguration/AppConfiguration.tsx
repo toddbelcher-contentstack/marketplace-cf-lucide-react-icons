@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { useAppLocation } from "../../common/hooks/useAppLocation";
 import "./AppConfiguration.css";
 
-type IconFormat = "kebab" | "camel" | "json";
+type IconFormat = "kebab" | "camel" | "pascal" | "json";
 
 const FORMAT_OPTIONS: { value: IconFormat; label: string; example: string }[] = [
   { value: "kebab", label: "kebab-case", example: '"credit-card"' },
   { value: "camel", label: "camelCase", example: '"creditCard"' },
+  { value: "pascal", label: "PascalCase", example: '"CreditCard"' },
   { value: "json", label: "JSON", example: '{ "name": "credit-card" }' },
 ];
 

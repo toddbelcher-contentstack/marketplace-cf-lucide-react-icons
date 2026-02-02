@@ -7,10 +7,15 @@ import { IconPickerGrid } from "../../rte-icon-picker";
 import "../../rte-icon-picker.css";
 import "./CustomField.css";
 
-type IconFormat = "kebab" | "camel" | "json";
+type IconFormat = "kebab" | "camel" | "pascal" | "json";
 
 function toCamelCase(kebab: string): string {
   return kebab.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+}
+
+function toPascalCase(kebab: string): string {
+  const camel = toCamelCase(kebab);
+  return camel.charAt(0).toUpperCase() + camel.slice(1);
 }
 
 /** Extract the kebab-case icon name from any stored format */
@@ -30,6 +35,8 @@ function formatValue(kebabName: string, format: IconFormat): unknown {
   switch (format) {
     case "camel":
       return toCamelCase(kebabName);
+    case "pascal":
+      return toPascalCase(kebabName);
     case "json":
       return { name: kebabName };
     case "kebab":

@@ -39,9 +39,8 @@ export const MarketplaceAppProvider: React.FC<ProviderProps> = ({ children }) =>
     ContentstackAppSDK.init()
       .then(async (appSdk) => {
         setAppSdk(appSdk);
-        //updated Height of the Custom Field Iframe.
-        appSdk.location.DashboardWidget?.frame?.disableAutoResizing();
-        await appSdk.location.CustomField?.frame?.updateHeight?.(450);
+        //enable auto-resizing for Custom Field so it fits content
+        appSdk.location.CustomField?.frame?.enableAutoResizing?.();
         //updated Height and Width of the Field Modifier Iframe.
         appSdk.location.FieldModifierLocation?.frame?.disableAutoResizing();
         await appSdk.location.FieldModifierLocation?.frame?.updateDimension({ height: 380, width: 520 });

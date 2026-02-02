@@ -18,12 +18,20 @@ function toPascalCase(kebab: string): string {
   return camel.charAt(0).toUpperCase() + camel.slice(1);
 }
 
+/** Convert any format back to kebab-case for DynamicIcon */
+function toKebabCase(str: string): string {
+  // PascalCase/camelCase → kebab: insert hyphen before uppercase letters, then lowercase
+  return str
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+}
+
 /** Extract the kebab-case icon name from any stored format */
 function parseIconName(data: unknown): string | null {
   if (!data) return null;
   if (typeof data === "string") {
-    // Could be kebab or camel — normalize isn't needed for display, just return as-is
-    return data;
+    return toKebabCase(data);
   }
   if (typeof data === "object" && data !== null && "name" in data) {
     return (data as { name: string }).name;

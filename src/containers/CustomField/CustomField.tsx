@@ -36,7 +36,7 @@ function parseIconName(data: unknown): string | null {
   } else if (typeof data === "object" && data !== null && "name" in data) {
     name = (data as { name: string }).name;
   }
-  if (name && !iconNames.has(name as IconName)) {
+  if (name && !iconNames.includes(name as IconName)) {
     console.warn(`[icon-picker] Icon "${name}" not found in lucide-react, clearing invalid value`);
     return null;
   }

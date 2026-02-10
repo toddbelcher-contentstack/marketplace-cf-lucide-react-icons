@@ -22,7 +22,7 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .elementType(["inline", "void"])
   .render((props: any) => {
     const iconName = props?.element?.attrs?.["icon-name"];
-    if (!iconName || !iconNames.has(iconName as IconName)) return <span {...props.attributes}>{props.children}</span>;
+    if (!iconName || !iconNames.includes(iconName as IconName)) return <span {...props.attributes}>{props.children}</span>;
     return (
       <span
         {...props.attributes}

@@ -1,6 +1,6 @@
 import ContentstackAppSDK, { PluginBuilder } from "@contentstack/app-sdk";
 import React from "react";
-import { DynamicIcon, IconName } from "lucide-react/dynamic";
+import { DynamicIcon, IconName, iconNames } from "lucide-react/dynamic";
 import ReactDOM from "react-dom";
 import { IconPickerGrid } from "./rte-icon-picker";
 
@@ -22,7 +22,7 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .elementType(["inline", "void"])
   .render((props: any) => {
     const iconName = props?.element?.attrs?.["icon-name"];
-    if (!iconName) return <span />;
+    if (!iconName || !iconNames.has(iconName as IconName)) return <span {...props.attributes}>{props.children}</span>;
     return (
       <span
         {...props.attributes}

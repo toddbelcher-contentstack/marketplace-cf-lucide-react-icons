@@ -6,13 +6,16 @@ import { isNull } from "lodash";
 import { KeyValueObj } from "../types/types";
 import { AppFailed } from "../../components/AppFailed";
 import { MarketplaceAppContext } from "../contexts/marketplaceContext";
-import { ContentType } from "@contentstack/app-sdk/dist/src/types/stack.types";
 import { useVerifyAppToken } from "../hooks/useVerifyAppToken";
 import { getTokenFromUrl } from "../utils/functions";
 
 type ProviderProps = {
   children?: React.ReactNode;
 };
+
+// Start SDK init at module load so the postRobot extensionEvent handler
+// registers before Contentstack sends messages to the iframe.
+const sdkPromise = ContentstackAppSDK.init();
 
 /**
  * Marketplace App Provider
@@ -25,30 +28,13 @@ export const MarketplaceAppProvider: React.FC<ProviderProps> = ({ children }) =>
   const token = getTokenFromUrl();
   const { isValidAppToken } = useVerifyAppToken(token);
 
-  const [sdkState, setSdkState] = useState<{
-    contentType: ContentType | null;
-    globalFields: unknown[];
-    error: Error | null;
-  }>({
-    contentType: null,
-    globalFields: [],
-    error: null,
-  });
-  // Initialize the SDK and track analytics event
+  // Consume the already-started SDK promise
   useEffect(() => {
-    ContentstackAppSDK.init()
+    sdkPromise
       .then(async (appSdk) => {
         setAppSdk(appSdk);
-        //enable auto-resizing for Custom Field so it fits content
         appSdk.location.CustomField?.frame?.enableAutoResizing?.();
-        //updated Height and Width of the Field Modifier Iframe.
-        appSdk.location.FieldModifierLocation?.frame?.disableAutoResizing();
-        await appSdk.location.FieldModifierLocation?.frame?.updateDimension({ height: 380, width: 520 });
-        // //updated Height of the Stack Dashboard Iframe.
-        appSdk.location.DashboardWidget?.frame?.disableAutoResizing();
-        await appSdk.location.DashboardWidget?.frame?.updateHeight?.(722);
         const appConfig = await appSdk.getConfig();
-
         setConfig(appConfig);
       })
       .catch(() => {

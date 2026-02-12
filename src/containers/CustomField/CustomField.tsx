@@ -29,18 +29,23 @@ function toKebabCase(str: string): string {
 
 /** Extract the kebab-case icon name from any stored format */
 function parseIconName(data: unknown): string | null {
-  if (!data) return null;
-  let name: string | null = null;
-  if (typeof data === "string") {
-    name = toKebabCase(data);
-  } else if (typeof data === "object" && data !== null && "name" in data) {
-    name = (data as { name: string }).name;
-  }
-  if (name && !iconNames.includes(name as IconName)) {
-    console.warn(`[icon-picker] Icon "${name}" not found in lucide-react, clearing invalid value`);
+  try {
+    if (!data) return null;
+    let name: string | null = null;
+    if (typeof data === "string") {
+      name = toKebabCase(data);
+    } else if (typeof data === "object" && data !== null && "name" in data) {
+      name = (data as { name: string }).name;
+    }
+    if (name && !iconNames.includes(name as IconName)) {
+      console.warn(`[icon-picker] Icon "${name}" not found in lucide-react, clearing invalid value`);
+      return null;
+    }
+    return name;
+  } catch (err) {
+    console.error("[icon-picker] Failed to parse icon name:", err);
     return null;
   }
-  return name;
 }
 
 function formatValue(kebabName: string, format: IconFormat): unknown {

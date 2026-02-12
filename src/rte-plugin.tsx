@@ -21,22 +21,27 @@ const LucideIconPlugin = new PluginBuilder(ELEMENT_TYPE)
   .display(["toolbar"])
   .elementType(["inline", "void"])
   .render((props: any) => {
-    const iconName = props?.element?.attrs?.["icon-name"];
-    if (!iconName || !iconNames.includes(iconName as IconName)) return <span {...props.attributes}>{props.children}</span>;
-    return (
-      <span
-        {...props.attributes}
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          verticalAlign: "middle",
-        }}
-        contentEditable={false}
-      >
-        <DynamicIcon name={iconName as IconName} size={18} />
-        {props.children}
-      </span>
-    );
+    try {
+      const iconName = props?.element?.attrs?.["icon-name"];
+      if (!iconName || !iconNames.includes(iconName as IconName)) return <span {...props.attributes}>{props.children}</span>;
+      return (
+        <span
+          {...props.attributes}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            verticalAlign: "middle",
+          }}
+          contentEditable={false}
+        >
+          <DynamicIcon name={iconName as IconName} size={18} />
+          {props.children}
+        </span>
+      );
+    } catch (err) {
+      console.error("[icon-picker] RTE render error:", err);
+      return <span {...props.attributes}>{props.children}</span>;
+    }
   })
   .on("exec", (rte) => {
     const savedSelection = rte.selection.get();

@@ -50,27 +50,8 @@
   color: #888;
 }
 
-.app-configuration-save {
-  background: #6c5ce7;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1.25rem;
+.app-configuration-hint {
+  color: #6c5ce7;
   font-size: 0.875rem;
-  cursor: pointer;
-}
-
-.app-configuration-save:hover {
-  background: #5a4bd1;
-}
-
-.app-configuration-save:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.app-configuration-saved {
-  color: #27ae60;
-  font-size: 0.875rem;
-  margin-left: 0.75rem;
+  margin: 0;
 }

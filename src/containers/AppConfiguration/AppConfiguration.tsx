@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppLocation } from "../../common/hooks/useAppLocation";
 import "./AppConfiguration.css";
 
@@ -14,7 +14,8 @@ const FORMAT_OPTIONS: { value: IconFormat; label: string; example: string }[] = 
 const AppConfiguration = () => {
   const { location } = useAppLocation();
   const [iconFormat, setIconFormat] = useState<IconFormat>("kebab");
-  const [saved, setSaved] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const initialLoad = useRef(true);
 
   useEffect(() => {
     if (location && "getConfig" in location) {
@@ -22,17 +23,18 @@ const AppConfiguration = () => {
         if (config?.iconFormat) {
           setIconFormat(config.iconFormat);
         }
+        initialLoad.current = false;
       });
     }
   }, [location]);
 
-  const handleSave = useCallback(async () => {
+  const handleChange = (value: IconFormat) => {
+    setIconFormat(value);
+    setDirty(true);
     if (location && "setConfig" in location) {
-      await (location as any).setConfig({ iconFormat });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      (location as any).setConfig({ iconFormat: value });
     }
-  }, [location, iconFormat]);
+  };
 
   return (
     <div className="app-configuration">
@@ -47,10 +49,7 @@ const AppConfiguration = () => {
               name="iconFormat"
               value={opt.value}
               checked={iconFormat === opt.value}
-              onChange={() => {
-                setIconFormat(opt.value);
-                setSaved(false);
-              }}
+              onChange={() => handleChange(opt.value)}
             />
             <div>
               <div className="app-configuration-option-label">{opt.label}</div>
@@ -60,10 +59,11 @@ const AppConfiguration = () => {
         ))}
       </div>
 
-      <button className="app-configuration-save" onClick={handleSave} type="button">
-        Save
-      </button>
-      {saved && <span className="app-configuration-saved">Saved</span>}
+      {dirty && (
+        <p className="app-configuration-hint">
+          Click <strong>Save</strong> in the Contentstack toolbar to apply your changes.
+        </p>
+      )}
     </div>
   );
 };
